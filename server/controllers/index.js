@@ -54,8 +54,8 @@ const readAllCats = (req, res, callback) => {
 };
 
 const readAllDogs = (req, res, callback) => {
-    Dog.find(callback);
-}
+  Dog.find(callback);
+};
 
 
 // function to find a specific cat on request.
@@ -127,8 +127,7 @@ const hostPage3 = (req, res) => {
 };
 
 const hostPage4 = (req, res) => {
-    
-    const callback = (err, docs) => {
+  const callback = (err, docs) => {
     if (err) {
       return res.json({ err }); // if error, return it
     }
@@ -136,9 +135,9 @@ const hostPage4 = (req, res) => {
     // return success
     return res.render('page4', { dogs: docs });
   };
-    
-    readAllDogs(req, res, callback);
-}
+
+  readAllDogs(req, res, callback);
+};
 
 // function to handle get request to send the name
 // controller functions in Express receive the full HTTP request
@@ -299,12 +298,18 @@ const searchDog = (req, res) => {
     if (!doc) {
       return res.json({ error: 'No dogs found' });
     }
-      
-    doc.age++;
+
+    const dog = doc;
+    dog.age++;
+
+    const savePromise = doc.save();
+    savePromise.then(() => res.json({ name: doc.name, breed: doc.breed, age: dog.age }));
+    savePromise.catch(er => res.json({ er }));
 
     return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
   });
 };
+
 
 // function to handle a request to any non-real resources (404)
 // controller functions in Express receive the full HTTP request
@@ -327,7 +332,7 @@ module.exports = {
   page1: hostPage1,
   page2: hostPage2,
   page3: hostPage3,
-    page4: hostPage4,
+  page4: hostPage4,
   readCat,
   getName,
   setName,
