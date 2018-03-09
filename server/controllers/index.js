@@ -16,7 +16,7 @@ const defaultDogData = {
   name: 'unknown',
   breed: 'unknown',
   age: 1,
- };
+};
 
 // object for us to keep track of the last Cat we made and dynamically update it sometimes
 let lastAdded = new Cat(defaultData);
@@ -52,6 +52,10 @@ const readAllCats = (req, res, callback) => {
   // The find function returns an array of matching objects
   Cat.find(callback);
 };
+
+const readAllDogs = (req, res, callback) => {
+    Dog.find(callback);
+}
 
 
 // function to find a specific cat on request.
@@ -121,6 +125,20 @@ const hostPage3 = (req, res) => {
     // into the jade to be used as variables with #{varName}
   res.render('page3');
 };
+
+const hostPage4 = (req, res) => {
+    
+    const callback = (err, docs) => {
+    if (err) {
+      return res.json({ err }); // if error, return it
+    }
+
+    // return success
+    return res.render('page4', { dogs: docs });
+  };
+    
+    readAllDogs(req, res, callback);
+}
 
 // function to handle get request to send the name
 // controller functions in Express receive the full HTTP request
@@ -250,7 +268,7 @@ const setDog = (req, res) => {
 
   const dogData = {
     name: req.body.name,
-      breed: req.body.breed,
+    breed: req.body.breed,
     age: req.body.age,
   };
 
@@ -269,7 +287,6 @@ const setDog = (req, res) => {
 };
 
 const searchDog = (req, res) => {
-    
   if (!req.query.name) {
     return res.json({ error: 'Name is required to perform a search' });
   }
@@ -282,8 +299,10 @@ const searchDog = (req, res) => {
     if (!doc) {
       return res.json({ error: 'No dogs found' });
     }
+      
+    doc.age++;
 
-    return res.json({ name: doc.name, breed: doc.breed, age: doc.age});
+    return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
   });
 };
 
@@ -308,11 +327,13 @@ module.exports = {
   page1: hostPage1,
   page2: hostPage2,
   page3: hostPage3,
+    page4: hostPage4,
   readCat,
   getName,
   setName,
   updateLast,
   searchName,
-    setDog,
+  setDog,
+  searchDog,
   notFound,
 };
