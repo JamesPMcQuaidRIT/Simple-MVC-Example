@@ -242,6 +242,51 @@ const updateLast = (req, res) => {
   savePromise.catch(err => res.json({ err }));
 };
 
+
+const setDog = (req, res) => {
+  if (!req.body.name || !req.body.breed || !req.body.age) {
+    return res.status(400).json({ error: 'name,breed and age are all required' });
+  }
+
+  const dogData = {
+    name: req.body.name,
+      breed: req.body.breed,
+    age: req.body.age,
+  };
+
+  const newDog = new Dog(dogData);
+
+  const savePromise = newDog.save();
+
+  savePromise.then(() => {
+    lastDogAdded = newDog;
+    res.json({ name: lastDogAdded.name, breed: lastDogAdded.breed, age: lastDogAdded.age });
+  });
+
+  savePromise.catch(err => res.json({ err }));
+
+  return res;
+};
+
+const searchDog = (req, res) => {
+    
+  if (!req.query.name) {
+    return res.json({ error: 'Name is required to perform a search' });
+  }
+
+  return Dog.findByName(req.query.name, (err, doc) => {
+    if (err) {
+      return res.json({ err });
+    }
+
+    if (!doc) {
+      return res.json({ error: 'No dogs found' });
+    }
+
+    return res.json({ name: doc.name, breed: doc.breed, age: doc.age});
+  });
+};
+
 // function to handle a request to any non-real resources (404)
 // controller functions in Express receive the full HTTP request
 // and get a pre-filled out response object to send
@@ -268,5 +313,6 @@ module.exports = {
   setName,
   updateLast,
   searchName,
+    setDog,
   notFound,
 };
